@@ -32,8 +32,19 @@
             return $stmt->fetch(PDO::FETCH_ASSOC)['password'] == md5($password);
         }
 
-        private function notNull($email, $password) {
-            return $email !== null and $email !== '' and $password !== null and $password !== '';
+        private function checkPost($post_id) {
+            $sql = 'SELECT * FROM post WHERE id = :post_id';
+            $stmt = $this->dbconn->prepare($sql);
+            $stmt->execute(['post_id' => $post_id]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+
+        private function notNull($arg1, $arg2) {
+            return $arg1 !== null and $arg1 !== '' and $arg2 !== null and $arg2 !== '';
+        }
+
+        private function authorizedUser($post_id, $email) {
+            return $this->notNull($post_id, $email) and $this->checkPost($post_id)['uid'] === $this->checkUser($email)['id'];
         }
 
         public function register($email, $password, $password_confirmation) {
@@ -71,7 +82,7 @@
             return true;
         }
 
-        public function readPost($id) {
+        public function readPost($id, $email) {
             $sql = 'SELECT * FROM post WHERE id = :id';
             $stmt = $this->dbconn->prepare($sql);
             $stmt->execute([
@@ -80,7 +91,7 @@
             return $stmt->fetch(PDO::FETCH_ASSOC);
         }
 
-        public function readAllPosts() {
+        public function readAllPosts($email) {
             $sql = 'SELECT * FROM post';
             $stmt = $this->dbconn->prepare($sql);
             $stmt->execute();
@@ -91,19 +102,20 @@
             return false;
         }
 
-        public function deletePost($id) {
-            $sql = 'DELETE FROM post WHERE id = :id';
-            $stmt = $this->dbconn->prepare($sql);
-            $post = $stmt->execute([
-                'id' => $id
-            ]);
-            return true;
+        public function deletePost($id, $email) {
+            if ($this->authorizedUser($id, $email)) {
+                $sql = 'DELETE FROM post WHERE id = :id';
+                $stmt = $this->dbconn->prepare($sql);
+                $post = $stmt->execute([
+                    'id' => $id
+                ]);
+                return true;
+            }
+            return false;
         }
         
     }
 
     $db = new Database();
-
-    // echo $db->login('admin@admin.com', 'password');
 
 ?>
