@@ -19,10 +19,17 @@
         }
 
         public function checkUser($email) {
-            $sql = 'SELECT id, email FROM user WHERE email = :email';
+            $sql = 'SELECT id, name, email FROM user WHERE email = :email';
             $stmt = $this->dbconn->prepare($sql);
             $stmt->execute(['email' => $email]);
             return $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+
+        private function checkPassword($email, $password) {
+            $sql = 'SELECT password FROM user WHERE email = :email';
+            $stmt = $this->dbconn->prepare($sql);
+            $stmt->execute(['email' => $email]);
+            return $stmt->fetch(PDO::FETCH_ASSOC)['password'] == md5($password);
         }
 
         private function notNull($email, $password) {
@@ -47,7 +54,7 @@
         public function login($email, $password) {
             if ($this->notNull($email, $password)) {
                 if($this->checkUser($email)) {
-                    return $email;
+                    return true;
                 }
             }
             return false;
@@ -96,15 +103,7 @@
     }
 
     $db = new Database();
-    // if ($db->createPost('daniel', 1, 'admin@admin.com')) {
-    //     echo 'created';
-    // }
-    // print_r($db->readPost(2));
-    // print_r($db->readPost(1));
-    // if ($db->deletePost(1)) {
-    //     echo 'deleted';
-    // }
 
-    // print_r($db->checkUser('admin@admin.com')['id']);
+    // echo $db->login('admin@admin.com', 'password');
 
 ?>

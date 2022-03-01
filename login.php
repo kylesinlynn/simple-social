@@ -1,5 +1,21 @@
 <?php 
     session_start();
+
+    if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
+        require_once('database/Database.php');
+
+        if ( $db->login( $_POST['email'], $_POST['password'] ) ) {
+            $_SESSION['email'] = $_POST['email'];
+        } else {
+            header('location:login.php?error=true');
+            exit();
+        }
+    }
+
+    if ( isset($_SESSION['email']) ) {
+        header('location:.');
+    }
+
 ?>
 
 <!DOCTYPE html>
@@ -13,6 +29,12 @@
 <body>
 
     <form action="login.php" method="post">
+        <div>
+            <?php if ($_GET['error']): ?>
+                <p>Credentials are wrong.</p>
+            <?php endif; ?>
+        </div>    
+
         <div>
             <input type="text" name="email" placeholder="Email" required>
         </div>
