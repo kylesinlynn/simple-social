@@ -36,8 +36,8 @@
             return $email !== null and $email !== '' and $password !== null and $password !== '';
         }
 
-        public function register($email, $password) {
-            if ($this->notNull($email, $password)) {
+        public function register($email, $password, $password_confirmation) {
+            if ($this->notNull($email, $password) and $password == $password_confirmation) {
                 if(!$this->checkUser($email)) {
                     $sql = 'INSERT INTO user (email, password) VALUES (:email, :password)';
                     $stmt = $this->dbconn->prepare($sql);
