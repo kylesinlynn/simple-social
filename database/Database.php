@@ -6,7 +6,7 @@
         private $dbpass = '';
         private $dbname = 'simple_social';
 
-        public $dbconn = null;
+        protected static $dbconn = null;
 
         public function __construct() {
             try {
@@ -71,51 +71,38 @@
             return false;
         }
 
-        public function createPost($content, $privacy, $email) {
-            $sql = 'INSERT INTO post (content, privacy, uid) VALUES (:content, :privacy, :uid)';
-            $stmt = $this->dbconn->prepare($sql);
-            $stmt->execute([
-                'content' => $content,
-                'privacy' => $privacy,
-                'uid' => $this->checkUser($email)['id'],
-            ]);
-            return true;
-        }
+        // public function readPost($id, $email) {
+        //     $sql = 'SELECT * FROM post WHERE id = :id';
+        //     $stmt = $this->dbconn->prepare($sql);
+        //     $stmt->execute([
+        //         'id' => $id
+        //     ]);
+        //     return $stmt->fetch(PDO::FETCH_ASSOC);
+        // }
 
-        public function readPost($id, $email) {
-            $sql = 'SELECT * FROM post WHERE id = :id';
-            $stmt = $this->dbconn->prepare($sql);
-            $stmt->execute([
-                'id' => $id
-            ]);
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        }
+        // public function readAllPosts($email) {
+        //     $sql = 'SELECT * FROM post';
+        //     $stmt = $this->dbconn->prepare($sql);
+        //     $stmt->execute();
+        //     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        // }
 
-        public function readAllPosts($email) {
-            $sql = 'SELECT * FROM post';
-            $stmt = $this->dbconn->prepare($sql);
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        }
+        // public function editPost() {
+        //     return false;
+        // }
 
-        public function editPost() {
-            return false;
-        }
-
-        public function deletePost($id, $email) {
-            if ($this->authorizedUser($id, $email)) {
-                $sql = 'DELETE FROM post WHERE id = :id';
-                $stmt = $this->dbconn->prepare($sql);
-                $post = $stmt->execute([
-                    'id' => $id
-                ]);
-                return true;
-            }
-            return false;
-        }
+        // public function deletePost($id, $email) {
+        //     if ($this->authorizedUser($id, $email)) {
+        //         $sql = 'DELETE FROM post WHERE id = :id';
+        //         $stmt = $this->dbconn->prepare($sql);
+        //         $post = $stmt->execute([
+        //             'id' => $id
+        //         ]);
+        //         return true;
+        //     }
+        //     return false;
+        // }
         
     }
-
-    $db = new Database();
 
 ?>
