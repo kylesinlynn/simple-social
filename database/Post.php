@@ -17,7 +17,7 @@ class Post extends Database {
     }
 
     public function getAllPosts() {
-        $stmt = $this->dbconn->prepare('SELECT * FROM ' . self::$table);
+        $stmt = $this->dbconn->prepare('SELECT * FROM ' . self::$table . ' ORDER BY id DESC');
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

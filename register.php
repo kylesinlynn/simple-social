@@ -2,18 +2,9 @@
     session_start();
 
     if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
-        require_once('database/Database.php');
-
-        if ( $db->checkUser($_POST['email']) ) {
-            header('location:register.php?user=true');
-            exit();
-        } else if ( $db->register( $_POST['email'], $_POST['password'], $_POST['password_confirmation'] ) ) {
-            header('location:login.php?register=true');
-            exit();
-        } else {
-            header('location:register.php?error=true');
-            exit();
-        }
+        require_once('database/Auth.php');
+        
+        $register = $auth->register($_POST['email'], $_POST['password'], $_POST['password_confirmation']);
     }
 
     if ( isset($_SESSION['email']) ) {
@@ -25,13 +16,8 @@
 
 <form action="register.php" method="post">
     <div>
-        <?php if ($_GET['error']): ?>
-            <p>Enter valid information.</p>
-        <?php elseif($_GET['user']): ?>
-            <p>User already exists. <a href="login.php">Login</a></p>
-        <?php endif; ?>
     </div>    
-
+        <p><?= $register ?></p>
     <div>
         <input type="text" name="email" placeholder="Email" required>
     </div>
@@ -46,5 +32,9 @@
 
     <div>
         <button type="submit">Register</button>
+    </div>
+
+    <div>
+        <p>Already have an account? <a href="login.php">Login</a></p>
     </div>
 </form>
