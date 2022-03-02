@@ -12,6 +12,12 @@ class Auth extends Database {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function getUserById($id) {
+        $stmt = $this->dbconn->prepare('SELECT id, name, email FROM ' . self::$table . ' WHERE id = :id');
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     private function checkUserPassword($email, $password) {
         if ($this->getUser($email)) {
             $stmt = $this->dbconn->prepare('SELECT password FROM ' . self::$table . ' WHERE email = :email');
