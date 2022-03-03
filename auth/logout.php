@@ -3,5 +3,5 @@
 
     session_unset();
 
-    header('location:.');
+    header('location:..');
 ?>

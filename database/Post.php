@@ -9,7 +9,7 @@ class Post extends Database {
     public function createPost($content, $privacy, $uid) {
         $stmt = $this->dbconn->prepare('INSERT INTO ' . self::$table . ' (content, privacy, uid) VALUES (:content, :privacy, :uid)');
         $stmt->execute([
-            'content' => $content,
+            'content' => htmlspecialchars($content),
             'privacy' => $privacy,
             'uid' => $uid,
         ]);

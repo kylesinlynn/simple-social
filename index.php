@@ -1,37 +1,40 @@
 <?php
-    session_start();
+session_start();
 
-    if ( !isset($_SESSION["email"]) ){
-        header("location:login.php");
-        exit();
+require_once('database/Auth.php');
+require_once('database/Post.php');
+require_once('database/Permission.php');
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' and !isset($_SESSION['email'])) {
+
+    if ($_POST['password_confirmation']) {
+        $register = $auth->register($_POST['email'], $_POST['password'], $_POST['password_confirmation']);
+    } else {
+        $login = $auth->login($_POST['email'], $_POST['password']);
+
+        if ( $login['user'] ) {
+            $_SESSION['email'] = $_POST['email'];
+        }
     }
-
-    require_once('database/Post.php');
-    require_once('database/Auth.php');
-
-    $posts = $post->getAllPosts();
+}
 ?>
 
-<div>
-    <?php echo $_SESSION['email']; ?>
-    <a href="logout.php">Logout</a>
+<?php include_once('include/header.php'); ?>
+
+<div class='container'>
+    <?php
+    if (!isset($_SESSION['email'])) {
+        if (isset($_GET['register'])) {
+            include_once('auth/register.php');
+        } else {
+            include_once('auth/login.php');
+        }
+    } else {
+        $posts = $post->getAllPosts();
+        require_once('post/posts.php');
+    }
+
+    ?>
 </div>
 
-<form action="create.php" method="post">
-    <div>
-        <input type="text" name="content">
-    </div>
-
-    <div>
-        <button type="submit">Post</button>
-    </div>
-</form>
-
-<div>
-    <?php for($post = 0; $post < count($posts); $post++): ?>
-        <div>
-            <?php echo $auth->getUserById($posts[$post]['uid'])['email'] . ' >> ' . $posts[$post]['content']; ?>
-            <a href="delete.php?id=<?php echo $posts[$post]['id'] ?>">delete</a>
-        </div>
-    <?php endfor; ?>
-</div>
+<?php include_once('include/footer.php'); ?>
